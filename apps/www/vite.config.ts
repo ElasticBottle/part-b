@@ -1,5 +1,4 @@
 import tailwindcss from "@tailwindcss/vite";
-import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { createJiti } from "jiti";
@@ -22,9 +21,7 @@ const config = defineConfig({
     mkcert(),
     tanstackStart({
       customViteReactPlugin: true,
-    }),
-    nitroV2Plugin({
-      compatibilityDate: "2025-09-23",
+      target: "vercel",
     }),
     viteReact(),
   ],

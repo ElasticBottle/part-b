@@ -23,7 +23,9 @@ const config = defineConfig({
     tanstackStart({
       customViteReactPlugin: true,
     }),
-    nitroV2Plugin(),
+    nitroV2Plugin({
+      compatibilityDate: "2025-09-23",
+    }),
     viteReact(),
   ],
   test: {

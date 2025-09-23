@@ -1,8 +1,8 @@
 import tailwindcss from "@tailwindcss/vite";
+import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { createJiti } from "jiti";
-import { nitro } from "nitro/vite";
 import mkcert from "vite-plugin-mkcert";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
@@ -23,7 +23,7 @@ const config = defineConfig({
     tanstackStart({
       customViteReactPlugin: true,
     }),
-    nitro(),
+    nitroV2Plugin(),
     viteReact(),
   ],
   test: {

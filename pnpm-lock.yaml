@@ -114,6 +114,9 @@ importers:
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
+      nitro:
+        specifier: ^0.0.0
+        version: 0.0.0
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -5851,6 +5854,9 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
       react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
+  nitro@0.0.0:
+    resolution: {integrity: sha512-01S4adMoYsgKIh5u7Y+sJO8u7hSxRi9ToDBeLTYZJ+L8thyjlCkDrOIWbG+y0SJRE8DpADQYGvJWPebBdJ/xvg==}
 
   nitropack@2.12.3:
     resolution: {integrity: sha512-tOclbEypO35qc7cBrq21DC+JQaEE5JTJr/kqqJYMFdk1pQqmTd7isUqg7aMHjzgIwMdtzrQv+7T/Q2YGWAKG3Q==}
@@ -13954,6 +13960,8 @@ snapshots:
     dependencies:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
+
+  nitro@0.0.0: {}
 
   nitropack@2.12.3(@netlify/blobs@9.1.2)(better-sqlite3@11.9.1)(drizzle-orm@0.44.5(@cloudflare/workers-types@4.20250412.0)(@opentelemetry/api@1.9.0)(@prisma/client@6.6.0(prisma@6.6.0(typescript@5.9.2))(typescript@5.9.2))(@types/better-sqlite3@7.6.13)(@types/pg@8.15.5)(better-sqlite3@11.9.1)(gel@2.0.1)(kysely@0.28.5)(pg@8.16.3)(postgres@3.4.5)(prisma@6.6.0(typescript@5.9.2))):
     dependencies:

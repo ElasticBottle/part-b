@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles.css",
+    "baseColor": "zinc",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@rectangular-labs/ui/components",
+    "ui": "@rectangular-labs/ui/components/ui",
+    "utils": "@rectangular-labs/ui/utils/cn",
+    "lib": "@rectangular-labs/ui/utils",
+    "hooks": "@rectangular-labs/ui/hooks"
+  },
+  "iconLibrary": "lucide"
+}

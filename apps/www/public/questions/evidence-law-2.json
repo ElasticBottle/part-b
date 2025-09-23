@@ -1,0 +1,12 @@
+{
+  "slug": "evidence-law-2",
+  "type": "mcq",
+  "question": "The burden of proof in criminal cases is:",
+  "options": [
+    "On the accused to prove innocence",
+    "On the prosecution beyond reasonable doubt",
+    "On the prosecution on balance of probabilities",
+    "Shared equally between prosecution and defense"
+  ],
+  "answer": 1
+}

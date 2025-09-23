@@ -1,0 +1,12 @@
+{
+  "slug": "evidence-law-1",
+  "type": "mcq",
+  "question": "Under the Evidence Act, hearsay evidence is generally:",
+  "options": [
+    "Always admissible",
+    "Never admissible",
+    "Inadmissible unless it falls within specific exceptions",
+    "Only admissible in criminal cases"
+  ],
+  "answer": 2
+}

@@ -12,11 +12,18 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuestionsIndexRouteImport } from './routes/questions.index'
+import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as QuestionsQuestionSlugRouteImport } from './routes/questions.$questionSlug'
 import { Route as AuthedOrpcRouteImport } from './routes/_authed/orpc'
+import { Route as MarketingBlogRouteRouteImport } from './routes/_marketing/blog/route'
+import { Route as MarketingBlogIndexRouteImport } from './routes/_marketing/blog/index'
+import { Route as MarketingBlogSplatRouteImport } from './routes/_marketing/blog/$'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
+import { ServerRoute as MarketingBlogRssDotxmlServerRouteImport } from './routes/_marketing/blog/rss[.]xml'
 
 const rootServerRouteImport = createServerRootRoute()
 
@@ -25,19 +32,48 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketingRouteRoute = MarketingRouteRouteImport.update({
+  id: '/_marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const QuestionsIndexRoute = QuestionsIndexRouteImport.update({
+  id: '/questions/',
+  path: '/questions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => MarketingRouteRoute,
+} as any)
+const QuestionsQuestionSlugRoute = QuestionsQuestionSlugRouteImport.update({
+  id: '/questions/$questionSlug',
+  path: '/questions/$questionSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedOrpcRoute = AuthedOrpcRouteImport.update({
   id: '/orpc',
   path: '/orpc',
   getParentRoute: () => AuthedRouteRoute,
+} as any)
+const MarketingBlogRouteRoute = MarketingBlogRouteRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => MarketingRouteRoute,
+} as any)
+const MarketingBlogIndexRoute = MarketingBlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketingBlogRouteRoute,
+} as any)
+const MarketingBlogSplatRoute = MarketingBlogSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => MarketingBlogRouteRoute,
 } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
@@ -49,60 +85,113 @@ const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   path: '/api/rpc/$',
   getParentRoute: () => rootServerRouteImport,
 } as any)
+const MarketingBlogRssDotxmlServerRoute =
+  MarketingBlogRssDotxmlServerRouteImport.update({
+    id: '/_marketing/blog/rss.xml',
+    path: '/blog/rss.xml',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/blog': typeof MarketingBlogRouteRouteWithChildren
   '/orpc': typeof AuthedOrpcRoute
+  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/': typeof MarketingIndexRoute
+  '/questions': typeof QuestionsIndexRoute
+  '/blog/$': typeof MarketingBlogSplatRoute
+  '/blog/': typeof MarketingBlogIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/orpc': typeof AuthedOrpcRoute
+  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/': typeof MarketingIndexRoute
+  '/questions': typeof QuestionsIndexRoute
+  '/blog/$': typeof MarketingBlogSplatRoute
+  '/blog': typeof MarketingBlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/_marketing': typeof MarketingRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_marketing/blog': typeof MarketingBlogRouteRouteWithChildren
   '/_authed/orpc': typeof AuthedOrpcRoute
+  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/_marketing/': typeof MarketingIndexRoute
+  '/questions/': typeof QuestionsIndexRoute
+  '/_marketing/blog/$': typeof MarketingBlogSplatRoute
+  '/_marketing/blog/': typeof MarketingBlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/orpc'
+  fullPaths:
+    | '/login'
+    | '/blog'
+    | '/orpc'
+    | '/questions/$questionSlug'
+    | '/'
+    | '/questions'
+    | '/blog/$'
+    | '/blog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/orpc'
-  id: '__root__' | '/' | '/_authed' | '/login' | '/_authed/orpc'
+  to:
+    | '/login'
+    | '/orpc'
+    | '/questions/$questionSlug'
+    | '/'
+    | '/questions'
+    | '/blog/$'
+    | '/blog'
+  id:
+    | '__root__'
+    | '/_authed'
+    | '/_marketing'
+    | '/login'
+    | '/_marketing/blog'
+    | '/_authed/orpc'
+    | '/questions/$questionSlug'
+    | '/_marketing/'
+    | '/questions/'
+    | '/_marketing/blog/$'
+    | '/_marketing/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  QuestionsQuestionSlugRoute: typeof QuestionsQuestionSlugRoute
+  QuestionsIndexRoute: typeof QuestionsIndexRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
+  '/blog/rss.xml': typeof MarketingBlogRssDotxmlServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/$': typeof ApiSplatServerRoute
+  '/blog/rss.xml': typeof MarketingBlogRssDotxmlServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/$': typeof ApiSplatServerRoute
+  '/_marketing/blog/rss.xml': typeof MarketingBlogRssDotxmlServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/rpc/$'
+  fullPaths: '/api/$' | '/blog/rss.xml' | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/rpc/$'
-  id: '__root__' | '/api/$' | '/api/rpc/$'
+  to: '/api/$' | '/blog/rss.xml' | '/api/rpc/$'
+  id: '__root__' | '/api/$' | '/_marketing/blog/rss.xml' | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiSplatServerRoute: typeof ApiSplatServerRoute
+  MarketingBlogRssDotxmlServerRoute: typeof MarketingBlogRssDotxmlServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
@@ -115,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_marketing': {
+      id: '/_marketing'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof MarketingRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed': {
       id: '/_authed'
       path: ''
@@ -122,11 +218,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/questions/': {
+      id: '/questions/'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof QuestionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/': {
+      id: '/_marketing/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof MarketingIndexRouteImport
+      parentRoute: typeof MarketingRouteRoute
+    }
+    '/questions/$questionSlug': {
+      id: '/questions/$questionSlug'
+      path: '/questions/$questionSlug'
+      fullPath: '/questions/$questionSlug'
+      preLoaderRoute: typeof QuestionsQuestionSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/orpc': {
@@ -135,6 +245,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/orpc'
       preLoaderRoute: typeof AuthedOrpcRouteImport
       parentRoute: typeof AuthedRouteRoute
+    }
+    '/_marketing/blog': {
+      id: '/_marketing/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof MarketingBlogRouteRouteImport
+      parentRoute: typeof MarketingRouteRoute
+    }
+    '/_marketing/blog/': {
+      id: '/_marketing/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof MarketingBlogIndexRouteImport
+      parentRoute: typeof MarketingBlogRouteRoute
+    }
+    '/_marketing/blog/$': {
+      id: '/_marketing/blog/$'
+      path: '/$'
+      fullPath: '/blog/$'
+      preLoaderRoute: typeof MarketingBlogSplatRouteImport
+      parentRoute: typeof MarketingBlogRouteRoute
     }
   }
 }
@@ -154,6 +285,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiRpcSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/_marketing/blog/rss.xml': {
+      id: '/_marketing/blog/rss.xml'
+      path: '/blog/rss.xml'
+      fullPath: '/blog/rss.xml'
+      preLoaderRoute: typeof MarketingBlogRssDotxmlServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
   }
 }
 
@@ -169,16 +307,46 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
   AuthedRouteRouteChildren,
 )
 
+interface MarketingBlogRouteRouteChildren {
+  MarketingBlogSplatRoute: typeof MarketingBlogSplatRoute
+  MarketingBlogIndexRoute: typeof MarketingBlogIndexRoute
+}
+
+const MarketingBlogRouteRouteChildren: MarketingBlogRouteRouteChildren = {
+  MarketingBlogSplatRoute: MarketingBlogSplatRoute,
+  MarketingBlogIndexRoute: MarketingBlogIndexRoute,
+}
+
+const MarketingBlogRouteRouteWithChildren =
+  MarketingBlogRouteRoute._addFileChildren(MarketingBlogRouteRouteChildren)
+
+interface MarketingRouteRouteChildren {
+  MarketingBlogRouteRoute: typeof MarketingBlogRouteRouteWithChildren
+  MarketingIndexRoute: typeof MarketingIndexRoute
+}
+
+const MarketingRouteRouteChildren: MarketingRouteRouteChildren = {
+  MarketingBlogRouteRoute: MarketingBlogRouteRouteWithChildren,
+  MarketingIndexRoute: MarketingIndexRoute,
+}
+
+const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
+  MarketingRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  MarketingRouteRoute: MarketingRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  QuestionsQuestionSlugRoute: QuestionsQuestionSlugRoute,
+  QuestionsIndexRoute: QuestionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiSplatServerRoute: ApiSplatServerRoute,
+  MarketingBlogRssDotxmlServerRoute: MarketingBlogRssDotxmlServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport

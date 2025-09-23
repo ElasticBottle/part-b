@@ -1,13 +1,28 @@
 import {
   ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
   ArrowUpIcon,
+  BookOpenIcon,
+  CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  XIcon as CloseIcon,
   DotIcon,
   EyeIcon,
   EyeOffIcon,
   FileIcon,
   Loader2,
+  MenuIcon,
   MoonIcon,
+  MoveRightIcon,
+  PhoneCallIcon,
+  SearchIcon,
   SunIcon,
+  TargetIcon,
+  TrophyIcon,
+  UserIcon,
 } from "lucide-react";
 import type { SVGProps } from "react";
 
@@ -20,8 +35,23 @@ export const EyeOff = EyeOffIcon;
 export const Spinner = Loader2;
 export const ArrowUp = ArrowUpIcon;
 export const ArrowDown = ArrowDownIcon;
+export const ArrowLeft = ArrowLeftIcon;
+export const ArrowRight = ArrowRightIcon;
 export const File = FileIcon;
 export const Dot = DotIcon;
+export const User = UserIcon;
+export const Search = SearchIcon;
+export const Check = CheckIcon;
+export const MoveRight = MoveRightIcon;
+export const PhoneCall = PhoneCallIcon;
+export const BookOpen = BookOpenIcon;
+export const Clock = ClockIcon;
+export const Target = TargetIcon;
+export const Menu = MenuIcon;
+export const Trophy = TrophyIcon;
+export const ChevronLeft = ChevronLeftIcon;
+export const ChevronRight = ChevronRightIcon;
+export const X = CloseIcon;
 
 export const Logo = (props: IconProps) => (
   <svg

@@ -9,9 +9,10 @@ import type { InitialContext } from "./types";
 export const createApiContext = (
   args: Omit<InitialContext, "db" | "auth"> & { dbUrl: string },
 ) => {
+  const db = createDb(args.dbUrl);
   return {
-    db: createDb(args.dbUrl),
-    auth: initAuthHandler(),
+    db,
+    auth: initAuthHandler(args.url.origin, db),
     ...args,
   };
 };

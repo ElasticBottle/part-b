@@ -1,12 +1,14 @@
 import { createApiContext } from "@rectangular-labs/api/context";
 import { openAPIHandler } from "@rectangular-labs/api/server";
 import { initAuthHandler } from "@rectangular-labs/auth";
+import { createDb } from "@rectangular-labs/db";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 import { serverEnv } from "~/lib/env";
 
 async function handle({ request }: { request: Request }) {
   if (new URL(request.url).pathname.startsWith("/api/auth/")) {
-    const auth = initAuthHandler();
+    const env = serverEnv();
+    const auth = initAuthHandler(env.VITE_APP_URL, createDb(env.DATABASE_URL));
     return await auth.handler(request);
   }
 

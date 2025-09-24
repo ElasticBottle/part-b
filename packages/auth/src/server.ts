@@ -99,15 +99,15 @@ export function initAuthHandler(baseURL: string, db: DB) {
           clientSecret: env.AUTH_GITHUB_SECRET,
           redirectURI: `${baseURL}/api/auth/callback/github`,
         },
-        ...(useGoogle && {
-          google: {
-            clientId: env.AUTH_GOOGLE_CLIENT_ID,
-            clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
-            redirectURI: `${baseURL}/api/auth/callback/google`,
-            accessType: "offline",
-            prompt: "select_account consent",
-          },
-        }),
+      }),
+      ...(useGoogle && {
+        google: {
+          clientId: env.AUTH_GOOGLE_CLIENT_ID,
+          clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
+          redirectURI: `${baseURL}/api/auth/callback/google`,
+          accessType: "offline",
+          prompt: "select_account consent",
+        },
       }),
     },
     trustedOrigins: ["expo://"],

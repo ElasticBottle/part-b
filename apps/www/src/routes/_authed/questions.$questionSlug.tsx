@@ -1,14 +1,17 @@
-import { randomUUID } from "node:crypto";
 import { allQuestions } from "@rectangular-labs/content/collections";
 import { createDb } from "@rectangular-labs/db";
 import { userAnswerTable } from "@rectangular-labs/db/schema/user-answer-schema";
 import * as Icons from "@rectangular-labs/ui/components/icon";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
-import { Button } from "@rectangular-labs/ui/components/ui/button";
+import {
+  Button,
+  buttonVariants,
+} from "@rectangular-labs/ui/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@rectangular-labs/ui/components/ui/card";
@@ -18,33 +21,45 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@rectangular-labs/ui/components/ui/radio-group";
-import {
-  createFileRoute,
-  Link,
-  notFound,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type } from "arktype";
 import { useState } from "react";
 import { getCurrentSession } from "~/lib/auth";
 import { serverEnv } from "~/lib/env";
 
-// Server function to get a specific question by slug
-const getQuestionBySlug = createServerFn({
-  method: "GET",
-})
+// Server function to get question details including navigation metadata
+const getQuestionDetails = createServerFn({ method: "GET" })
   .validator(
     type({
       slug: "string",
     }),
   )
   .handler(({ data: { slug } }) => {
-    const question = allQuestions.find((q) => q.slug === slug);
+    const index = allQuestions.findIndex((q) => q.slug === slug);
+    if (index === -1) {
+      throw notFound();
+    }
+    const question = allQuestions[index];
     if (!question) {
       throw notFound();
     }
-    return question;
+
+    const totalQuestions = allQuestions.length;
+    const previousSlug =
+      index > 0 ? (allQuestions[index - 1]?.slug ?? null) : null;
+    const nextSlug =
+      index < totalQuestions - 1
+        ? (allQuestions[index + 1]?.slug ?? null)
+        : null;
+
+    return {
+      question,
+      questionIndex: index,
+      previousSlug,
+      nextSlug,
+      totalQuestions,
+    };
   });
 
 // Server function to record a user's answer
@@ -73,7 +88,6 @@ const recordAnswer = createServerFn({ method: "POST" })
     await db
       .insert(userAnswerTable)
       .values({
-        id: randomUUID(),
         userId,
         questionSlug: slug,
         subject: question.subject,
@@ -97,39 +111,24 @@ const recordAnswer = createServerFn({ method: "POST" })
     return { isCorrect, subject: question.subject };
   });
 
-// Server function to get all question slugs for navigation
-const getAllQuestionSlugs = createServerFn({
-  method: "GET",
-}).handler(() => {
-  return allQuestions.map((q) => q.slug);
-});
 export const Route = createFileRoute("/_authed/questions/$questionSlug")({
   component: QuestionPage,
   loader: async ({ params }) => {
-    // Use server function to get the specific question
-    const question = await getQuestionBySlug({
+    const details = await getQuestionDetails({
       data: { slug: params.questionSlug },
     });
-    const allQuestionSlugs = await getAllQuestionSlugs();
-
-    return {
-      question,
-      allQuestionSlugs,
-    };
+    return details;
   },
 });
 
 function QuestionPage() {
-  const { question, allQuestionSlugs } = Route.useLoaderData();
-  const navigate = useNavigate();
+  const { question, questionIndex, previousSlug, nextSlug, totalQuestions } =
+    Route.useLoaderData();
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
-  const questions = allQuestionSlugs;
-
-  const currentIndex = questions.indexOf(question.slug);
-  const progress = ((currentIndex + 1) / questions.length) * 100;
+  const progress = ((questionIndex + 1) / totalQuestions) * 100;
 
   const handleSubmit = async () => {
     if (selectedAnswer === null) return;
@@ -147,39 +146,15 @@ function QuestionPage() {
     }
   };
 
-  const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      void navigate({
-        to: "/questions/$questionSlug",
-        params: {
-          questionSlug: questions[currentIndex + 1] ?? "contract-law-1",
-        },
-      });
-      // Reset state for next question
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
+  const onNext = () => {
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setIsCorrect(false);
   };
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      void navigate({
-        to: "/questions/$questionSlug",
-        params: {
-          questionSlug: questions[currentIndex - 1] ?? "contract-law-1",
-        },
-      });
-      // Reset state for previous question
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
-  };
-
-  // subject is available directly on the question from content
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      <div className="container mx-auto px-6 py-16 md:px-8 md:py-24">
+    <div className="bg-gradient-to-br from-background via-muted/20 to-background">
+      <div className="container mx-auto px-6 py-16 md:px-8">
         {/* Header with Progress */}
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
@@ -197,7 +172,7 @@ function QuestionPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-muted-foreground text-sm">
               <span>
-                Question {currentIndex + 1} of {questions.length}
+                Question {questionIndex + 1} of {totalQuestions}
               </span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
@@ -326,46 +301,61 @@ function QuestionPage() {
                   </div>
                 </div>
               )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-4 pt-4 sm:flex-row">
-                <div className="flex w-full gap-4">
-                  <Button
-                    className="flex-1"
-                    disabled={currentIndex === 0}
-                    onClick={handlePrevious}
-                    size="lg"
-                    variant="outline"
-                  >
-                    <Icons.ChevronLeft className="mr-2 h-4 w-4" />
-                    Previous
-                  </Button>
-
-                  {!showResult ? (
-                    <Button
-                      className="flex-1"
-                      disabled={selectedAnswer === null}
-                      onClick={handleSubmit}
-                      size="lg"
-                    >
-                      Submit Answer
-                    </Button>
-                  ) : currentIndex === questions.length - 1 ? (
-                    <Button asChild className="flex-1" size="lg">
-                      <Link className="gap-2" to="/questions">
-                        <Icons.Trophy className="h-4 w-4" />
-                        Finish Quiz
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button className="flex-1" onClick={handleNext} size="lg">
-                      Next Question
-                      <Icons.ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
             </CardContent>
+            {/* Action Buttons */}
+            <CardFooter className="justify-between gap-4">
+              {previousSlug && (
+                <Link
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                    className: "flex-1",
+                  })}
+                  onClick={onNext}
+                  params={{ questionSlug: previousSlug }}
+                  to="/questions/$questionSlug"
+                >
+                  <Icons.ChevronLeft className="mr-2 h-4 w-4" />
+                  Previous
+                </Link>
+              )}
+              {!showResult && (
+                <Button
+                  className="flex-1"
+                  disabled={selectedAnswer === null}
+                  onClick={handleSubmit}
+                  size="lg"
+                >
+                  Submit Answer
+                </Button>
+              )}
+              {showResult && nextSlug && (
+                <Link
+                  className={buttonVariants({
+                    size: "lg",
+                    className: "flex-1",
+                  })}
+                  onClick={onNext}
+                  params={{ questionSlug: nextSlug }}
+                  to="/questions/$questionSlug"
+                >
+                  Next
+                </Link>
+              )}
+              {showResult && !nextSlug && (
+                <Link
+                  className={buttonVariants({
+                    size: "lg",
+                    className: "flex-1",
+                  })}
+                  onClick={onNext}
+                  to="/questions"
+                >
+                  <Icons.Trophy className="h-4 w-4" />
+                  Finish Quiz
+                </Link>
+              )}
+            </CardFooter>
           </Card>
         </div>
       </div>

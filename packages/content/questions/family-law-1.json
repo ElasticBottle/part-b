@@ -1,6 +1,7 @@
 {
   "slug": "family-law-1",
   "type": "mcq",
+  "subject": "Family Law",
   "question": "Under the Women's Charter, what is the minimum age for marriage without parental consent?",
   "options": ["18 years", "19 years", "21 years", "25 years"],
   "answer": 2

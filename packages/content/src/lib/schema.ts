@@ -38,6 +38,7 @@ export const MetaSchema = type({
 export const QuestionSchema = type({
   slug: "string",
   type: "'mcq'",
+  subject: "string",
   question: "string",
   options: type("string")
     .array()

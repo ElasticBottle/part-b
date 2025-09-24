@@ -1,4 +1,7 @@
+import { randomUUID } from "node:crypto";
 import { allQuestions } from "@rectangular-labs/content/collections";
+import { createDb } from "@rectangular-labs/db";
+import { userAnswerTable } from "@rectangular-labs/db/schema/user-answer-schema";
 import * as Icons from "@rectangular-labs/ui/components/icon";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
 import { Button } from "@rectangular-labs/ui/components/ui/button";
@@ -24,6 +27,8 @@ import {
 import { createServerFn } from "@tanstack/react-start";
 import { type } from "arktype";
 import { useState } from "react";
+import { getCurrentSession } from "~/lib/auth";
+import { serverEnv } from "~/lib/env";
 
 // Server function to get a specific question by slug
 const getQuestionBySlug = createServerFn({
@@ -40,6 +45,56 @@ const getQuestionBySlug = createServerFn({
       throw notFound();
     }
     return question;
+  });
+
+// Server function to record a user's answer
+const recordAnswer = createServerFn({ method: "POST" })
+  .validator(
+    type({
+      slug: "string",
+      selectedAnswer: "number",
+    }),
+  )
+  .handler(async ({ data: { slug, selectedAnswer } }) => {
+    const env = serverEnv();
+    const db = createDb(env.DATABASE_URL);
+    const session = await getCurrentSession();
+    const userId = session?.user?.id;
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const question = allQuestions.find((q) => q.slug === slug);
+    if (!question) {
+      throw notFound();
+    }
+    const isCorrect = selectedAnswer === question.answer;
+
+    await db
+      .insert(userAnswerTable)
+      .values({
+        id: randomUUID(),
+        userId,
+        questionSlug: slug,
+        subject: question.subject,
+        selectedAnswer,
+        isCorrect,
+        answeredAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [
+          userAnswerTable.userId,
+          userAnswerTable.questionSlug,
+          userAnswerTable.subject,
+        ],
+        set: {
+          selectedAnswer,
+          isCorrect,
+          answeredAt: new Date(),
+        },
+      });
+
+    return { isCorrect, subject: question.subject };
   });
 
 // Server function to get all question slugs for navigation
@@ -76,12 +131,20 @@ function QuestionPage() {
   const currentIndex = questions.indexOf(question.slug);
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedAnswer === null) return;
-
-    const correct = selectedAnswer === question.answer;
-    setIsCorrect(correct);
-    setShowResult(true);
+    try {
+      const result = await recordAnswer({
+        data: { slug: question.slug, selectedAnswer },
+      });
+      setIsCorrect(!!result?.isCorrect);
+      setShowResult(true);
+    } catch {
+      // Fall back to local evaluation on error
+      const correct = selectedAnswer === question.answer;
+      setIsCorrect(correct);
+      setShowResult(true);
+    }
   };
 
   const handleNext = () => {
@@ -112,13 +175,7 @@ function QuestionPage() {
     }
   };
 
-  const getSubjectFromSlug = (slug: string) => {
-    const parts = slug.split("-");
-    return parts
-      .slice(0, -1)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
+  // subject is available directly on the question from content
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -133,7 +190,7 @@ function QuestionPage() {
               </Link>
             </Button>
             <Badge className="text-sm" variant="secondary">
-              {getSubjectFromSlug(question.slug)}
+              {question.subject}
             </Badge>
           </div>
 
@@ -191,7 +248,7 @@ function QuestionPage() {
                       className={`flex-1 cursor-pointer rounded-lg border p-4 transition-colors ${
                         showResult
                           ? index === question.answer
-                            ? "border-green-300 bg-green-50"
+                            ? "border-green-300 bg-green-50 dark:border-green-700/60 dark:bg-green-900/30"
                             : selectedAnswer === index &&
                                 index !== question.answer
                               ? "border-destructive/30 bg-destructive/10 text-destructive"
@@ -209,9 +266,9 @@ function QuestionPage() {
                         {showResult && (
                           <div className="ml-2">
                             {index === question.answer ? (
-                              <Icons.Check className="h-5 w-5 text-green-600" />
+                              <Icons.Check className="h-5 w-5 text-green-600 dark:text-green-400" />
                             ) : selectedAnswer === index ? (
-                              <Icons.X className="h-5 w-5 text-red-600" />
+                              <Icons.X className="h-5 w-5 text-red-600 dark:text-red-400" />
                             ) : null}
                           </div>
                         )}
@@ -226,33 +283,39 @@ function QuestionPage() {
                 <div
                   className={`rounded-lg border-2 p-6 ${
                     isCorrect
-                      ? "border-green-300 bg-green-50"
-                      : "border-red-300 bg-red-50"
+                      ? "border-green-300 bg-green-50 dark:border-green-700/60 dark:bg-green-900/30"
+                      : "border-red-300 bg-red-50 dark:border-red-700/60 dark:bg-red-900/30"
                   }`}
                 >
                   <div className="mb-3 flex items-center gap-3">
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        isCorrect ? "bg-green-100" : "bg-red-100"
+                        isCorrect
+                          ? "bg-green-100 dark:bg-green-900/30"
+                          : "bg-red-100 dark:bg-red-900/30"
                       }`}
                     >
                       {isCorrect ? (
-                        <Icons.Check className="h-5 w-5 text-green-700" />
+                        <Icons.Check className="h-5 w-5 text-green-700 dark:text-green-300" />
                       ) : (
-                        <Icons.X className="h-5 w-5 text-red-700" />
+                        <Icons.X className="h-5 w-5 text-red-700 dark:text-red-300" />
                       )}
                     </div>
                     <div>
                       <h3
                         className={`font-semibold ${
-                          isCorrect ? "text-green-800" : "text-red-800"
+                          isCorrect
+                            ? "text-green-800 dark:text-green-200"
+                            : "text-red-800 dark:text-red-200"
                         }`}
                       >
                         {isCorrect ? "Correct!" : "Incorrect"}
                       </h3>
                       <p
                         className={`text-sm ${
-                          isCorrect ? "text-green-700" : "text-red-700"
+                          isCorrect
+                            ? "text-green-700 dark:text-green-300"
+                            : "text-red-700 dark:text-red-300"
                         }`}
                       >
                         {isCorrect

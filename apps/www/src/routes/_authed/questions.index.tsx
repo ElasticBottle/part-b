@@ -1,4 +1,6 @@
 import { allQuestions } from "@rectangular-labs/content/collections";
+import { asc, count, createDb, eq, sql, sum } from "@rectangular-labs/db";
+import { userAnswerTable } from "@rectangular-labs/db/schema/user-answer-schema";
 import * as Icons from "@rectangular-labs/ui/components/icon";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
 import { Button } from "@rectangular-labs/ui/components/ui/button";
@@ -11,25 +13,91 @@ import {
 } from "@rectangular-labs/ui/components/ui/card";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { getCurrentSession } from "~/lib/auth";
+import { serverEnv } from "~/lib/env";
 
-// Server function to get all question slugs
-const getAllQuestionSlugs = createServerFn({
-  method: "GET",
-}).handler(() => {
-  return allQuestions.map((q) => q.slug);
+// Server function to compute per-subject stats for current user
+const getDashboardData = createServerFn({ method: "GET" }).handler(async () => {
+  const env = serverEnv();
+  const db = createDb(env.DATABASE_URL);
+  const session = await getCurrentSession();
+  const userId = session?.user?.id ?? null;
+
+  // Aggregate total questions per subject from content
+  const subjects = Array.from(
+    new Set(allQuestions.map((q) => q.subject)),
+  ).sort();
+  const totalPerSubject = subjects.reduce<Record<string, number>>((acc, s) => {
+    acc[s] = allQuestions.filter((q) => q.subject === s).length;
+    return acc;
+  }, {});
+
+  const baseSelect = db
+    .select({
+      subject: userAnswerTable.subject,
+      answered_count: count().mapWith(Number),
+      correct_count: sum(
+        sql<number>`case when ${userAnswerTable.isCorrect} then 1 else 0 end`,
+      ).mapWith(Number),
+    })
+    .from(userAnswerTable)
+    .groupBy(userAnswerTable.subject)
+    .orderBy(asc(userAnswerTable.subject));
+
+  const rows = userId
+    ? await baseSelect.where(eq(userAnswerTable.userId, userId))
+    : await baseSelect;
+
+  const bySubject: Record<
+    string,
+    { total: number; answered: number; correct: number }
+  > = {};
+  for (const s of subjects) {
+    bySubject[s] = {
+      total: totalPerSubject[s] ?? 0,
+      answered: 0,
+      correct: 0,
+    };
+  }
+  for (const r of rows) {
+    const current = bySubject[r.subject] ?? {
+      total: totalPerSubject[r.subject] ?? 0,
+      answered: 0,
+      correct: 0,
+    };
+    current.answered = r.answered_count;
+    current.correct = r.correct_count;
+    bySubject[r.subject] = current;
+  }
+
+  const totalQuestions = allQuestions.length;
+  const totalAnswered = Object.values(bySubject).reduce(
+    (a, b) => a + b.answered,
+    0,
+  );
+  const totalCorrect = Object.values(bySubject).reduce(
+    (a, b) => a + b.correct,
+    0,
+  );
+
+  return {
+    subjects,
+    bySubject,
+    totals: { totalQuestions, totalAnswered, totalCorrect },
+    firstSlug: allQuestions[0]?.slug ?? "contract-law-1",
+  };
 });
 
 export const Route = createFileRoute("/_authed/questions/")({
   component: QuestionsIntro,
   loader: async () => {
-    const questionSlugs = await getAllQuestionSlugs();
-    return { questionSlugs };
+    const data = await getDashboardData();
+    return data;
   },
 });
 
 function QuestionsIntro() {
-  const { questionSlugs } = Route.useLoaderData();
-  const questions = questionSlugs;
+  const { subjects, bySubject, totals, firstSlug } = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -56,7 +124,7 @@ function QuestionsIntro() {
                 <Icons.Target className="h-6 w-6 text-primary" />
               </div>
               <div className="mb-1 font-semibold text-3xl text-foreground tracking-tight">
-                {questions.length}
+                {totals.totalQuestions}
               </div>
               <div className="text-muted-foreground text-sm">
                 Practice Questions
@@ -70,7 +138,7 @@ function QuestionsIntro() {
                 <Icons.Clock className="h-6 w-6 text-primary" />
               </div>
               <div className="mb-1 font-semibold text-3xl text-foreground tracking-tight">
-                ~30
+                {Math.max(10, Math.round(totals.totalQuestions * 1.5))}
               </div>
               <div className="text-muted-foreground text-sm">
                 Minutes Duration
@@ -84,7 +152,7 @@ function QuestionsIntro() {
                 <Icons.Trophy className="h-6 w-6 text-primary" />
               </div>
               <div className="mb-1 font-semibold text-3xl text-foreground tracking-tight">
-                8
+                {subjects.length}
               </div>
               <div className="text-muted-foreground text-sm">Subject Areas</div>
             </CardContent>
@@ -104,25 +172,43 @@ function QuestionsIntro() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-                {[
-                  "Contract Law",
-                  "Tort Law",
-                  "Criminal Law",
-                  "Constitutional Law",
-                  "Administrative Law",
-                  "Evidence Law",
-                  "Company Law",
-                  "Property Law",
-                ].map((subject) => (
-                  <Badge
-                    className="justify-center border border-border/40 bg-secondary/60 py-2 text-secondary-foreground text-sm"
-                    key={subject}
-                    variant="secondary"
-                  >
-                    {subject}
-                  </Badge>
-                ))}
+              <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+                {subjects.map((subject) => {
+                  const s = bySubject[subject] ?? {
+                    total: 0,
+                    answered: 0,
+                    correct: 0,
+                  };
+                  const percent = s.total
+                    ? Math.round((s.correct / s.total) * 100)
+                    : 0;
+                  return (
+                    <Card
+                      className="border border-border/50 bg-muted/30 shadow-sm"
+                      key={subject}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-base">{subject}</CardTitle>
+                          <Badge className="text-xs" variant="secondary">
+                            {s.correct}/{s.total} correct
+                          </Badge>
+                        </div>
+                        <CardDescription className="text-xs">
+                          Answered {s.answered} of {s.total}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-2 w-full overflow-hidden rounded bg-muted">
+                          <div
+                            className="h-2 bg-primary"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
 
               <div className="mb-8 space-y-4">
@@ -156,7 +242,7 @@ function QuestionsIntro() {
                   size="lg"
                 >
                   <Link
-                    params={{ questionSlug: questions[0] ?? "contract-law-1" }}
+                    params={{ questionSlug: firstSlug }}
                     to="/questions/$questionSlug"
                   >
                     <Icons.BookOpen className="mr-2 h-5 w-5" />

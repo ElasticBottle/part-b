@@ -7,5 +7,4 @@ export const timestamps = {
   updatedAt: timestamp({ mode: "date", withTimezone: true })
     .notNull()
     .$onUpdateFn(() => new Date()),
-  deletedAt: timestamp({ mode: "date", withTimezone: true }),
 };

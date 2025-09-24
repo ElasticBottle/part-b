@@ -1,4 +1,3 @@
-import * as Icons from "@rectangular-labs/ui/components/icon";
 import {
   Accordion,
   AccordionContent,
@@ -6,10 +5,10 @@ import {
   AccordionTrigger,
 } from "@rectangular-labs/ui/components/ui/accordion";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
-import { Button } from "@rectangular-labs/ui/components/ui/button";
+import { Section } from "@rectangular-labs/ui/components/ui/section";
 
 export const FAQ2 = () => (
-  <div className="w-full py-20 lg:py-40">
+  <Section>
     <div className="container mx-auto">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -22,12 +21,6 @@ export const FAQ2 = () => (
               Get answers to common questions about the Singapore Part B Bar
               Examination and our comprehensive study guide.
             </p>
-          </div>
-          <div>
-            <Button className="gap-4" variant="outline">
-              Still have questions? Contact us{" "}
-              <Icons.PhoneCall className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 
@@ -77,7 +70,7 @@ export const FAQ2 = () => (
             ].map((faq, index) => (
               <AccordionItem
                 key={`faq-${faq.question.slice(0, 20)}`}
-                value={"index-" + index}
+                value={`index-${index}`}
               >
                 <AccordionTrigger>{faq.question}</AccordionTrigger>
                 <AccordionContent>{faq.answer}</AccordionContent>
@@ -87,5 +80,5 @@ export const FAQ2 = () => (
         </div>
       </div>
     </div>
-  </div>
+  </Section>
 );

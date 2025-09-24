@@ -48,7 +48,7 @@ const getAllQuestionSlugs = createServerFn({
 }).handler(() => {
   return allQuestions.map((q) => q.slug);
 });
-export const Route = createFileRoute("/questions/$questionSlug")({
+export const Route = createFileRoute("/_authed/questions/$questionSlug")({
   component: QuestionPage,
   loader: async ({ params }) => {
     // Use server function to get the specific question

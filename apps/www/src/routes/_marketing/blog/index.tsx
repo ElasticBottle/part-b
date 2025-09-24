@@ -27,5 +27,9 @@ function Page() {
     );
   }
 
-  return <BlogSection postsOverview={postOverview} title="Latest articles" />;
+  return (
+    <Section>
+      <BlogSection postsOverview={postOverview} title="Latest articles" />
+    </Section>
+  );
 }

@@ -1,9 +1,11 @@
 import * as Icons from "@rectangular-labs/ui/components/icon";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
 import { Button } from "@rectangular-labs/ui/components/ui/button";
+import { Section } from "@rectangular-labs/ui/components/ui/section";
+import { Link } from "@tanstack/react-router";
 
 export const CTA1 = () => (
-  <div className="w-full py-20 lg:py-40">
+  <Section>
     <div className="container mx-auto">
       <div className="flex flex-col items-center gap-8 rounded-md bg-muted p-4 text-center lg:p-14">
         <div>
@@ -21,14 +23,13 @@ export const CTA1 = () => (
           </p>
         </div>
         <div className="flex flex-row gap-4">
-          <Button className="gap-4" variant="outline">
-            Book Free Consultation <Icons.PhoneCall className="h-4 w-4" />
-          </Button>
-          <Button className="gap-4">
-            Get Full Access <Icons.MoveRight className="h-4 w-4" />
+          <Button asChild className="gap-4">
+            <Link to="/questions">
+              Get Full Access <Icons.MoveRight className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>
     </div>
-  </div>
+  </Section>
 );

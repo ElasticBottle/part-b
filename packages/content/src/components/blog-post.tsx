@@ -68,12 +68,6 @@ export function BlogPost({
         breadcrumb={{
           enabled: false,
         }}
-        editOnGithub={{
-          owner: "rectangular-labs",
-          repo: "monorepo",
-          sha: "main",
-          path: `packages/content/posts/${data._meta.fileName}`,
-        }}
         footer={{
           enabled: true,
         }}

@@ -27,8 +27,10 @@ export const Hero2 = () => (
               Take Practice Quiz <Icons.ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-          <Button className="gap-4" size="lg">
-            Start Studying Now <Icons.MoveRight className="h-4 w-4" />
+          <Button asChild className="gap-4" size="lg">
+            <Link to="/questions">
+              Start Studying Now <Icons.MoveRight className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>

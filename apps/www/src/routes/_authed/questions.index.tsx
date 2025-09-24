@@ -19,7 +19,7 @@ const getAllQuestionSlugs = createServerFn({
   return allQuestions.map((q) => q.slug);
 });
 
-export const Route = createFileRoute("/questions/")({
+export const Route = createFileRoute("/_authed/questions/")({
   component: QuestionsIntro,
   loader: async () => {
     const questionSlugs = await getAllQuestionSlugs();

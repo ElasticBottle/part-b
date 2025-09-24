@@ -1,8 +1,9 @@
 import * as Icons from "@rectangular-labs/ui/components/icon";
 import { Badge } from "@rectangular-labs/ui/components/ui/badge";
+import { Section } from "@rectangular-labs/ui/components/ui/section";
 
 export const Feature1 = () => (
-  <div className="w-full py-20 lg:px-8 lg:py-40">
+  <Section>
     <div className="container mx-auto">
       <div className="container grid grid-cols-1 items-center gap-8 rounded-lg border px-4 py-8 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-10">
@@ -57,5 +58,5 @@ export const Feature1 = () => (
         <div className="aspect-square rounded-md bg-muted"></div>
       </div>
     </div>
-  </div>
+  </Section>
 );

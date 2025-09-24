@@ -14,13 +14,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
-import { Route as QuestionsIndexRouteImport } from './routes/questions.index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as QuestionsQuestionSlugRouteImport } from './routes/questions.$questionSlug'
-import { Route as AuthedOrpcRouteImport } from './routes/_authed/orpc'
+import { Route as MarketingAboutRouteImport } from './routes/_marketing/about'
 import { Route as MarketingBlogRouteRouteImport } from './routes/_marketing/blog/route'
 import { Route as MarketingBlogIndexRouteImport } from './routes/_marketing/blog/index'
+import { Route as AuthedQuestionsIndexRouteImport } from './routes/_authed/questions.index'
 import { Route as MarketingBlogSplatRouteImport } from './routes/_marketing/blog/$'
+import { Route as AuthedQuestionsQuestionSlugRouteImport } from './routes/_authed/questions.$questionSlug'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as MarketingBlogRssDotxmlServerRouteImport } from './routes/_marketing/blog/rss[.]xml'
@@ -40,25 +40,15 @@ const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const QuestionsIndexRoute = QuestionsIndexRouteImport.update({
-  id: '/questions/',
-  path: '/questions/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
-const QuestionsQuestionSlugRoute = QuestionsQuestionSlugRouteImport.update({
-  id: '/questions/$questionSlug',
-  path: '/questions/$questionSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedOrpcRoute = AuthedOrpcRouteImport.update({
-  id: '/orpc',
-  path: '/orpc',
-  getParentRoute: () => AuthedRouteRoute,
+const MarketingAboutRoute = MarketingAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => MarketingRouteRoute,
 } as any)
 const MarketingBlogRouteRoute = MarketingBlogRouteRouteImport.update({
   id: '/blog',
@@ -70,11 +60,22 @@ const MarketingBlogIndexRoute = MarketingBlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingBlogRouteRoute,
 } as any)
+const AuthedQuestionsIndexRoute = AuthedQuestionsIndexRouteImport.update({
+  id: '/questions/',
+  path: '/questions/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const MarketingBlogSplatRoute = MarketingBlogSplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => MarketingBlogRouteRoute,
 } as any)
+const AuthedQuestionsQuestionSlugRoute =
+  AuthedQuestionsQuestionSlugRouteImport.update({
+    id: '/questions/$questionSlug',
+    path: '/questions/$questionSlug',
+    getParentRoute: () => AuthedRouteRoute,
+  } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -95,20 +96,20 @@ const MarketingBlogRssDotxmlServerRoute =
 export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/blog': typeof MarketingBlogRouteRouteWithChildren
-  '/orpc': typeof AuthedOrpcRoute
-  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/about': typeof MarketingAboutRoute
   '/': typeof MarketingIndexRoute
-  '/questions': typeof QuestionsIndexRoute
+  '/questions/$questionSlug': typeof AuthedQuestionsQuestionSlugRoute
   '/blog/$': typeof MarketingBlogSplatRoute
+  '/questions': typeof AuthedQuestionsIndexRoute
   '/blog/': typeof MarketingBlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
-  '/orpc': typeof AuthedOrpcRoute
-  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/about': typeof MarketingAboutRoute
   '/': typeof MarketingIndexRoute
-  '/questions': typeof QuestionsIndexRoute
+  '/questions/$questionSlug': typeof AuthedQuestionsQuestionSlugRoute
   '/blog/$': typeof MarketingBlogSplatRoute
+  '/questions': typeof AuthedQuestionsIndexRoute
   '/blog': typeof MarketingBlogIndexRoute
 }
 export interface FileRoutesById {
@@ -117,11 +118,11 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/_marketing/blog': typeof MarketingBlogRouteRouteWithChildren
-  '/_authed/orpc': typeof AuthedOrpcRoute
-  '/questions/$questionSlug': typeof QuestionsQuestionSlugRoute
+  '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/': typeof MarketingIndexRoute
-  '/questions/': typeof QuestionsIndexRoute
+  '/_authed/questions/$questionSlug': typeof AuthedQuestionsQuestionSlugRoute
   '/_marketing/blog/$': typeof MarketingBlogSplatRoute
+  '/_authed/questions/': typeof AuthedQuestionsIndexRoute
   '/_marketing/blog/': typeof MarketingBlogIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,20 +130,20 @@ export interface FileRouteTypes {
   fullPaths:
     | '/login'
     | '/blog'
-    | '/orpc'
-    | '/questions/$questionSlug'
+    | '/about'
     | '/'
-    | '/questions'
+    | '/questions/$questionSlug'
     | '/blog/$'
+    | '/questions'
     | '/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
-    | '/orpc'
-    | '/questions/$questionSlug'
+    | '/about'
     | '/'
-    | '/questions'
+    | '/questions/$questionSlug'
     | '/blog/$'
+    | '/questions'
     | '/blog'
   id:
     | '__root__'
@@ -150,11 +151,11 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/login'
     | '/_marketing/blog'
-    | '/_authed/orpc'
-    | '/questions/$questionSlug'
+    | '/_marketing/about'
     | '/_marketing/'
-    | '/questions/'
+    | '/_authed/questions/$questionSlug'
     | '/_marketing/blog/$'
+    | '/_authed/questions/'
     | '/_marketing/blog/'
   fileRoutesById: FileRoutesById
 }
@@ -162,8 +163,6 @@ export interface RootRouteChildren {
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-  QuestionsQuestionSlugRoute: typeof QuestionsQuestionSlugRoute
-  QuestionsIndexRoute: typeof QuestionsIndexRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
@@ -218,13 +217,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/questions/': {
-      id: '/questions/'
-      path: '/questions'
-      fullPath: '/questions'
-      preLoaderRoute: typeof QuestionsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_marketing/': {
       id: '/_marketing/'
       path: '/'
@@ -232,19 +224,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
-    '/questions/$questionSlug': {
-      id: '/questions/$questionSlug'
-      path: '/questions/$questionSlug'
-      fullPath: '/questions/$questionSlug'
-      preLoaderRoute: typeof QuestionsQuestionSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authed/orpc': {
-      id: '/_authed/orpc'
-      path: '/orpc'
-      fullPath: '/orpc'
-      preLoaderRoute: typeof AuthedOrpcRouteImport
-      parentRoute: typeof AuthedRouteRoute
+    '/_marketing/about': {
+      id: '/_marketing/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof MarketingAboutRouteImport
+      parentRoute: typeof MarketingRouteRoute
     }
     '/_marketing/blog': {
       id: '/_marketing/blog'
@@ -260,12 +245,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingBlogIndexRouteImport
       parentRoute: typeof MarketingBlogRouteRoute
     }
+    '/_authed/questions/': {
+      id: '/_authed/questions/'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof AuthedQuestionsIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_marketing/blog/$': {
       id: '/_marketing/blog/$'
       path: '/$'
       fullPath: '/blog/$'
       preLoaderRoute: typeof MarketingBlogSplatRouteImport
       parentRoute: typeof MarketingBlogRouteRoute
+    }
+    '/_authed/questions/$questionSlug': {
+      id: '/_authed/questions/$questionSlug'
+      path: '/questions/$questionSlug'
+      fullPath: '/questions/$questionSlug'
+      preLoaderRoute: typeof AuthedQuestionsQuestionSlugRouteImport
+      parentRoute: typeof AuthedRouteRoute
     }
   }
 }
@@ -296,11 +295,13 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AuthedRouteRouteChildren {
-  AuthedOrpcRoute: typeof AuthedOrpcRoute
+  AuthedQuestionsQuestionSlugRoute: typeof AuthedQuestionsQuestionSlugRoute
+  AuthedQuestionsIndexRoute: typeof AuthedQuestionsIndexRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
-  AuthedOrpcRoute: AuthedOrpcRoute,
+  AuthedQuestionsQuestionSlugRoute: AuthedQuestionsQuestionSlugRoute,
+  AuthedQuestionsIndexRoute: AuthedQuestionsIndexRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
@@ -322,11 +323,13 @@ const MarketingBlogRouteRouteWithChildren =
 
 interface MarketingRouteRouteChildren {
   MarketingBlogRouteRoute: typeof MarketingBlogRouteRouteWithChildren
+  MarketingAboutRoute: typeof MarketingAboutRoute
   MarketingIndexRoute: typeof MarketingIndexRoute
 }
 
 const MarketingRouteRouteChildren: MarketingRouteRouteChildren = {
   MarketingBlogRouteRoute: MarketingBlogRouteRouteWithChildren,
+  MarketingAboutRoute: MarketingAboutRoute,
   MarketingIndexRoute: MarketingIndexRoute,
 }
 
@@ -338,8 +341,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
   LoginRoute: LoginRoute,
-  QuestionsQuestionSlugRoute: QuestionsQuestionSlugRoute,
-  QuestionsIndexRoute: QuestionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

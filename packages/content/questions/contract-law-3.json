@@ -1,0 +1,13 @@
+{
+  "slug": "contract-law-3",
+  "type": "mcq",
+  "subject": "Contract Law",
+  "question": "Which statement best reflects the objective approach to agreement formation in Singapore?",
+  "options": [
+    "Courts ask what the parties actually thought subjectively",
+    "Courts ask what a reasonable person would infer from words and conduct",
+    "Courts prioritize pre-contractual negotiations over written terms",
+    "Courts generally ignore written contracts if oral terms differ"
+  ],
+  "answer": 1
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "criminal-law-8",
+  "type": "mcq",
+  "subject": "Criminal Law",
+  "question": "Which best describes the standard of proof for the Prosecution?",
+  "options": [
+    "Balance of probabilities",
+    "Beyond reasonable doubt",
+    "Clear and convincing evidence",
+    "Prima facie threshold only"
+  ],
+  "answer": 1
+}

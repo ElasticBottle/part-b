@@ -1,0 +1,13 @@
+{
+  "slug": "evidence-law-8",
+  "type": "mcq",
+  "subject": "Evidence Law",
+  "question": "The standard of proof in criminal trials for the defence of alibi is:",
+  "options": [
+    "Beyond reasonable doubt",
+    "On a balance of probabilities for the accused",
+    "Evidential burden only on the accused",
+    "Clear and convincing evidence"
+  ],
+  "answer": 2
+}

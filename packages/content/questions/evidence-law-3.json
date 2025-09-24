@@ -1,0 +1,13 @@
+{
+  "slug": "evidence-law-3",
+  "type": "mcq",
+  "subject": "Evidence Law",
+  "question": "A confession is admissible if:",
+  "options": [
+    "It was obtained by inducement",
+    "It was voluntary",
+    "It was made in police custody",
+    "It was made anonymously"
+  ],
+  "answer": 1
+}

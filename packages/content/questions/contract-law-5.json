@@ -1,0 +1,13 @@
+{
+  "slug": "contract-law-5",
+  "type": "mcq",
+  "subject": "Contract Law",
+  "question": "Which doctrine allows a third party to enforce a contract in Singapore?",
+  "options": [
+    "Privity doctrine without exceptions",
+    "Contracts (Rights of Third Parties) Act",
+    "Unfair Contract Terms Act",
+    "Frustrated Contracts Act"
+  ],
+  "answer": 1
+}

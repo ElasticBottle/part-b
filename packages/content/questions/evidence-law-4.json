@@ -1,0 +1,13 @@
+{
+  "slug": "evidence-law-4",
+  "type": "mcq",
+  "subject": "Evidence Law",
+  "question": "Character evidence of the accused is generally:",
+  "options": [
+    "Admissible to show propensity",
+    "Inadmissible subject to statutory exceptions",
+    "Always admissible if relevant",
+    "Admissible once the accused is charged"
+  ],
+  "answer": 1
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "contract-law-6",
+  "type": "mcq",
+  "subject": "Contract Law",
+  "question": "Which statement best describes misrepresentation under Singapore law?",
+  "options": [
+    "It must be a statement of future intention only",
+    "It is an actionable false statement of fact inducing a party to contract",
+    "Silence can never amount to misrepresentation",
+    "Only fraudulent misrepresentation is actionable"
+  ],
+  "answer": 1
+}

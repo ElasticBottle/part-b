@@ -1,0 +1,13 @@
+{
+  "slug": "evidence-law-6",
+  "type": "mcq",
+  "subject": "Evidence Law",
+  "question": "Which best describes similar fact evidence?",
+  "options": [
+    "Admissible if logically relevant only",
+    "Admissible if probative value outweighs prejudice",
+    "Always inadmissible",
+    "Admissible to show bad character only"
+  ],
+  "answer": 1
+}

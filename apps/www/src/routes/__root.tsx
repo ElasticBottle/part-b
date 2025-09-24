@@ -9,6 +9,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { clientEnv } from "~/lib/env";
 import { seo } from "~/lib/seo";
 import appCss from "../styles.css?url";
 
@@ -22,14 +23,26 @@ export const Route = createRootRouteWithContext<{
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
+      { name: "robots", content: "index, follow" },
+      {
+        name: "googlebot",
+        content:
+          "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+      },
+      { name: "theme-color", content: "#000000" },
       ...seo({
-        title: "Elastic Bottle Monorepo template",
+        title:
+          "Singapore Part B Bar Exam Study Guide | Practice Questions & Notes",
         description:
-          "Simple typescript monorepo template for end to end application development",
+          "Comprehensive preparation for the Singapore Part B Bar Examination. Practice questions, detailed explanations, and strategies across Constitutional, Contract, Tort, Criminal, Evidence, Property, Family, Company, and Administrative Law.",
+        keywords:
+          "Singapore Part B, Part B Bar Exam, Singapore Bar exam, Part B study guide, practice questions, MCQ, exam strategies, Constitutional Law, Contract Law, Tort Law, Criminal Law, Evidence Law, Property Law, Family Law, Company Law, Administrative Law, legal practice Singapore",
       }),
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: clientEnv().VITE_APP_URL },
       {
         rel: "apple-touch-icon",
         sizes: "180x180",

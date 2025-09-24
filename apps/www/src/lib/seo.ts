@@ -1,3 +1,5 @@
+import { clientEnv } from "./env";
+
 export const seo = ({
   title,
   description,
@@ -15,11 +17,17 @@ export const seo = ({
     { name: "keywords", content: keywords },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
-    { name: "twitter:creator", content: "@winston_yeo" },
-    { name: "twitter:site", content: "@winston_yeo" },
+    // { name: "twitter:creator", content: "@winston_yeo" },
+    // { name: "twitter:site", content: "@winston_yeo" },
     { name: "og:type", content: "website" },
     { name: "og:title", content: title },
     { name: "og:description", content: description },
+    {
+      name: "og:site_name",
+      content: "Singapore Part B Bar Exam Study Guide",
+    },
+    { name: "og:url", content: clientEnv().VITE_APP_URL },
+    { name: "og:locale", content: "en_US" },
     ...(image
       ? [
           { name: "twitter:image", content: image },

@@ -1,15 +1,7 @@
-import { expo } from "@better-auth/expo";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import {
-  emailOTP,
-  magicLink,
-  oAuthProxy,
-  organization,
-  twoFactor,
-} from "better-auth/plugins";
-import { passkey } from "better-auth/plugins/passkey";
+import { emailOTP, magicLink, oAuthProxy } from "better-auth/plugins";
 import { authEnv } from "./env";
 
 interface DB {
@@ -22,6 +14,8 @@ export function initAuthHandler(baseURL: string, db: DB) {
 
   const useDiscord = !!env.AUTH_DISCORD_ID && !!env.AUTH_DISCORD_SECRET;
   const useGithub = !!env.AUTH_GITHUB_ID && !!env.AUTH_GITHUB_SECRET;
+  const useGoogle =
+    !!env.AUTH_GOOGLE_CLIENT_SECRET && !!env.AUTH_GOOGLE_CLIENT_ID;
 
   const config = {
     baseURL,
@@ -90,15 +84,6 @@ export function initAuthHandler(baseURL: string, db: DB) {
           console.log(`[auth] Magic link for ${email}: ${token} ${url}`);
         },
       }),
-      passkey(),
-      twoFactor(),
-      organization({
-        sendInvitationEmail: async ({ email, id }) => {
-          await Promise.resolve();
-          console.log(`[auth] Invitation email for ${email}: ${id}`);
-        },
-      }),
-      expo(),
     ],
     socialProviders: {
       ...(useDiscord && {
@@ -114,6 +99,15 @@ export function initAuthHandler(baseURL: string, db: DB) {
           clientSecret: env.AUTH_GITHUB_SECRET,
           redirectURI: `${baseURL}/api/auth/callback/github`,
         },
+        ...(useGoogle && {
+          google: {
+            clientId: env.AUTH_GOOGLE_CLIENT_ID,
+            clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
+            redirectURI: `${baseURL}/api/auth/callback/google`,
+            accessType: "offline",
+            prompt: "select_account consent",
+          },
+        }),
       }),
     },
     trustedOrigins: ["expo://"],
@@ -124,5 +118,3 @@ export function initAuthHandler(baseURL: string, db: DB) {
 
 export type Auth = ReturnType<typeof initAuthHandler>;
 export type Session = Auth["$Infer"]["Session"];
-export type Organization = Auth["$Infer"]["Organization"];
-export type Member = Auth["$Infer"]["Member"];

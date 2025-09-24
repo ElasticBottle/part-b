@@ -11,6 +11,8 @@ export const authEnv = () =>
       AUTH_DISCORD_SECRET: type("string|undefined"),
       AUTH_GITHUB_ID: type("string|undefined"),
       AUTH_GITHUB_SECRET: type("string|undefined"),
+      AUTH_GOOGLE_CLIENT_ID: type("string|undefined"),
+      AUTH_GOOGLE_CLIENT_SECRET: type("string|undefined"),
     },
     clientPrefix: "VITE_",
     client: {
